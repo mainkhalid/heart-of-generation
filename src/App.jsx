@@ -7,24 +7,29 @@ import UserDashboard from "./layouts/UserDashboard";
 import Home from "./pages/Home";
 import EventsPage from "./pages/EventsPage";
 import DonationPage from "./pages/DonationPage";
-import ContactPage from "./pages/ContactPage"; 
+import ContactPage from "./pages/ContactPage";
 import GalleryPage from "./pages/Carousel";
-import AboutPage from "./pages/AboutPage"; 
+import AboutPage from "./pages/AboutPage";
 //admin pages
-import {Settings} from "./pages/Settings";
-import {Dashboard} from "./pages/Dashboard";
-import { VisitationPlanner } from "./pages/VisitationPlanner";  
+import { Settings } from "./pages/Settings";
+import { Dashboard } from "./pages/Dashboard";
+import { VisitationPlanner } from "./pages/VisitationPlanner";
 import { DonationList } from "./pages/DonationList";
 import { VisitationManagementList } from "./pages/VisitManagement";
-import {GalleryUpload} from "./pages/GalleryUpload";
+import { GalleryUpload } from "./pages/GalleryUpload";
 function ProtectedRoute({ children, allowedRoles }) {
   const { user, isLoaded, isSignedIn } = useUser();
 
-  if (!isLoaded) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  if (!isLoaded)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
   if (!isSignedIn) return <Navigate to="/sign-in" replace />;
 
   const role = user?.publicMetadata?.role || "user";
-  
+
   if (!allowedRoles.includes(role)) {
     return <Navigate to={role === "admin" ? "/admin" : "/user"} replace />;
   }
@@ -35,7 +40,12 @@ function ProtectedRoute({ children, allowedRoles }) {
 function DashboardRedirect() {
   const { user, isLoaded, isSignedIn } = useUser();
 
-  if (!isLoaded) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  if (!isLoaded)
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        Loading...
+      </div>
+    );
   if (!isSignedIn) return <Navigate to="/sign-in" replace />;
 
   const role = user?.publicMetadata?.role || "user";
@@ -46,9 +56,21 @@ export default function App() {
   return (
     <BrowserRouter>
       <Routes>
-        <Route path="/sign-in" element={<SignIn redirectUrl="/dashboard" />} />
+        <Route
+          path="/sign-in"
+          element={
+            <div className="min-h-screen flex items-center justify-center">
+              <SignIn
+                routing="path"
+                path="/sign-in"
+                fallbackRedirectUrl="/dashboard"
+              />
+            </div>
+          }
+        />
+
         <Route path="/dashboard" element={<DashboardRedirect />} />
-        
+
         <Route
           path="/user/*"
           element={
@@ -67,12 +89,12 @@ export default function App() {
         </Route>
 
         <Route
-        path="/admin/*"
-        element={
-          <ProtectedRoute allowedRoles={["admin"]}>
-            <AdminDashboard />
+          path="/admin/*"
+          element={
+            <ProtectedRoute allowedRoles={["admin"]}>
+              <AdminDashboard />
             </ProtectedRoute>
-        }
+          }
         >
           <Route index element={<Dashboard />} />
           <Route path="dashboard" element={<Dashboard />} />
@@ -81,13 +103,9 @@ export default function App() {
           <Route path="visitation-mgt" element={<VisitationManagementList />} />
           <Route path="donations" element={<DonationList />} />
           <Route path="gallery-upload" element={<GalleryUpload />} />
-
         </Route>
 
-        
-
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
-
       </Routes>
       <Toaster position="top-right" />
     </BrowserRouter>
